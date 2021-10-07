@@ -1,0 +1,10 @@
+{
+  "env": {
+    "MONGO_USERNAME": "admin",
+    "MONGO_PASSWORD": "admin",
+    "JWT_KEY": "secret_this_should_be_longer",
+    "MONGO_PORT": "27017",
+    "MONGO_HOSTNAME": "0.0.0.0",
+    "MONGO_DB": "post"
+  }
+}
