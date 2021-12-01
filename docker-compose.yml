@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    networks:
+      - internal
+    env_file:
+      - .env
+    environment:
+     MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - 27017:27017
+
+  node-backend:
+    image: nodejs
+    restart: unless-stopped
+    networks:
+      - internal
+    env_file:
+      - .env
+    environment:
+      MONGO_HOSTNAME: mongodb
+    volumes:
+      - ./backend:/backend
+    ports:
+      - 3000:3000
+    command:  >
+      bash -c "apt-get -q update
+      && apt-get -qy install netcat
+      && /backend/wait-for.sh mongodb:27017 -- npm run start"
+    depends_on:
+      - mongodb
+
+  angular-frontend:
+    image: nginx
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      NODE_BACKEND_HOSTNAME: node-backend
+    volumes:
+      - ./dist/mean-project:/usr/share/nginx/html
+    ports:
+      - 80:80
+    depends_on:
+      - node-backend
+
+networks:
+  internal:
+    external: false
