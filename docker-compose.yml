@@ -34,8 +34,6 @@ services:
     ports:
       - 3000:3000
     command: ./wait-for.sh mongodb:27017 -- node server.js
-    depends_on:
-      - mongodb
 
   angular-frontend:
     build:
@@ -49,8 +47,6 @@ services:
       NODE_BACKEND_HOSTNAME: node-backend
     ports:
       - 80:80
-    depends_on:
-      - node-backend
 
 networks:
   app-network:
