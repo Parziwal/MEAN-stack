@@ -30,6 +30,9 @@ jobs:
       run: |
         npm test -- --no-watch --no-progress --browsers=ChromeHeadless
         
+    - name: List files
+      run: ls -R /home/runner/work
+        
     - name: Unit Test Report ${{ matrix.node-version }}
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
