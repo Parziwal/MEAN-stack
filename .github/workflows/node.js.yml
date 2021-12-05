@@ -28,3 +28,8 @@ jobs:
     - name: Test
       run: |
         npm test -- --no-watch --no-progress --browsers=ChromeHeadless
+        
+    - name: Coverage report
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        lcov-file: ./coverage/mean-project/lcov.info
