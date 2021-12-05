@@ -31,7 +31,7 @@ jobs:
         npm test -- --no-watch --no-progress --browsers=ChromeHeadless
         
     - name: List files
-      run: ls -R /home/runner/work
+      run: ls -R /home/runner/work/MEAN-stack/MEAN-stack/junit_report
         
     - name: Unit Test Report ${{ matrix.node-version }}
       uses: dorny/test-reporter@v1
