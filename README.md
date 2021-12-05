@@ -2,6 +2,9 @@
 
 Az alkalmazás lényege, hogy a beregisztrált/bejelentkezett felhasználók posztolni tudnak az oldalon. A felhasználók látják egymás posztjait, de csak a sajátjukat tudják szerkeszteni, illetve törölni.
 
+![Fontend tests](https://github.com/Parziwal/MEAN-stack/actions/workflows/backend.yml/badge.svg)
+![Backend tests](https://github.com/Parziwal/MEAN-stack/actions/workflows/node.js.yml/badge.svg)
+
 ## Az alkalmazás futtatása:
 
 1. Mongodb docker container futtatása:
