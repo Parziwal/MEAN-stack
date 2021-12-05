@@ -51,12 +51,6 @@ services:
 networks:
   app-network:
     driver: bridge
-    ipam:
-     config:
-       - subnet: 10.5.0.0/16
-         gateway: 10.5.0.1
-         aux_addresses:
-          node-backend: 10.5.0.2
 
 volumes:
   dbdata:

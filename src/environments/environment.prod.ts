@@ -1,4 +1,6 @@
+const { NODE_BACKEND_HOSTNAME } = process.env;
+
 export const environment = {
   production: true,
-  apiUrl: "10.5.0.2:3000/api/"
+  apiUrl: `${NODE_BACKEND_HOSTNAME}:3000/api/`
 };
