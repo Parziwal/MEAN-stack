@@ -38,5 +38,5 @@ jobs:
       if: success() || failure()    # run this step even if previous step failed
       with:
         name: Unit test reports
-        path: /home/runner/work/MEAN-stack/MEAN-stack/junit_report/TEST-*.xml
+        path: /home/runner/work/MEAN-stack/MEAN-stack/junit_report/TESTS-*.xml
         reporter: java-junit
