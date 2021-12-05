@@ -34,6 +34,6 @@ jobs:
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: Fontend Unit test reports ${{ matrix.node-version }}
+        name: Frontend Unit test reports ${{ matrix.node-version }}
         path: /home/runner/work/MEAN-stack/MEAN-stack/junit_report/TESTS-*.xml
         reporter: java-junit
