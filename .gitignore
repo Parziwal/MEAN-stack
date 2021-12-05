@@ -48,3 +48,5 @@ Thumbs.db
 mongodb
 backend/node_modules
 backend/images
+junit_report
+backend/test-results.xml
