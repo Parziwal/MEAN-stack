@@ -30,13 +30,10 @@ jobs:
       run: |
         npm test -- --no-watch --no-progress --browsers=ChromeHeadless
         
-    - name: List files
-      run: ls -R /home/runner/work/MEAN-stack/MEAN-stack/junit_report
-        
     - name: Unit Test Report ${{ matrix.node-version }}
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: Unit test reports
+        name: Unit test reports ${{ matrix.node-version }}
         path: /home/runner/work/MEAN-stack/MEAN-stack/junit_report/TESTS-*.xml
         reporter: java-junit
