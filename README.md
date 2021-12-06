@@ -24,14 +24,16 @@ Az alkalmazás a három rétegű architektúrát követi:
 
 ## GitHub CI
 
-- Az alkalmazáshoz két Github workflow készült:
+Az alkalmazáshoz két Github workflow készült:
   - **Backend tesztelésre**
   - **Frontend tesztelésre**
 
-- Mind a két pipeline a legfrissebb ubuntu image-et használja és ugyanaz a két parancs van bennük kiadva: `npm ci` és `npm run test`, utóbbi esetlegesen pár opcióval
-- A teszteléshez tartozó parancs a backenden erre oldódik fel:
-`mocha tests/**/*.js --reporter mocha-junit-reporter`
-- A projekt konfigurációja miatt a két parancs következtében JUnit formátumú XML fájlokként teszt reportok készülnek, ezt pedig a workflow publikálja
+Mind a két pipeline a legfrissebb ubuntu image-et használja és ugyanaz a két parancs van bennük kiadva: `npm ci` és `npm run test`, utóbbi esetlegesen pár opcióval
+
+A teszteléshez tartozó parancs a backenden erre oldódik fel:
+- `mocha tests/**/*.js --reporter mocha-junit-reporter`
+
+A projekt konfigurációja miatt a két parancs következtében JUnit formátumú XML fájlokként teszt reportok készülnek, ezt pedig a workflow publikálja
 
 ## Docker:
 
