@@ -22,6 +22,39 @@ Az alkalmazás a három rétegű architektúrát követi:
 - **Express szerver oldal**: Az Express egy Node.js alapú keretrendszere, amely ingyenes és nyílt forráskódú. Webes alkalmazások és API-k kiépítésére tervezték.
 - **MongoDB adatbázis**: A MongoDB nyílt forráskódú dokumentumorientált adatbázis szoftver, amelyet a NoSQL adatbázisszerverek közé tartozik.
 
+
+## Tesztek
+
+A szerver és a kliens oldal esetében is unit teszteket és ui teszteket készítettünk az alkalmazás egyes funkcióinak ellenőrzéséhez.
+
+### Szerver oldali tesztek
+
+A szerver oldal esetében a posztok kezelését végző funkciókat teszteltük le `mocha` és `chai` tesztelési keretrendszerek segítségével.
+
+Az `postController` alábbi metódusait teszteltük le:
+
+- A `getPost`, ami egy megadott azonosítójú posztot kér le.
+- A `createPost`, ami az aktuális felhasználóhoz egy paraméterként megadott posztot hoz létre az adatbázisban.
+- A `updatePost`, ami a poszt és az aktuális felhasználó azonosítója alapján talált bejegyzést frissíti a paraméterként megadott adatokkal.
+- A `deletePost`, ami a poszt és az aktuális felhasználó azonosítója alapján törli a bejegyzést az adatbázisból.
+
+### Kliens oldali tesztek
+
+A kliens oldalon a posztok lekérését végző szolgáltatás és a posztokat kilistázó komponensekre készítettünk teszteket `jasmine` és `karma` tesztelési keretrendszerek alkalmazásával.
+
+Az `PostsService` szolgáltatás alábbi metódusait teszteltük:
+
+- `getPost`, ami lekéri a megadott azonosítójú bejegyzést.
+- `addPost`, ami a bejegyzés címe, tartalma és egy kép alapján létrehoz egy bejegyzést, és a felhasználót visszanavigálja a főoldalra.
+- `deletePost`, ami a megadott azonosítójú bejegyzést törli.
+
+A `PostListComponent` komponensben tesztelt részek:
+
+- A komponens létrejön a megadott beállításokkal.
+- A komponens a betöltése során lekéri és elmenti a posztokat, valamint beállítja az oldalszámot is.
+- A lekért poszt meg is jelenik a komponenshez tartozó nézetben.
+- Egy poszt esetén a törlés gombra kattintva a `PostsService` szolgáltatás `deletePost` metódusa kerül meghívásra.
+
 ## GitHub CI
 
 Az alkalmazáshoz két Github workflow készült:
@@ -124,38 +157,6 @@ A beállítások nagy része megegyezik az előző esetekkel, a különbség:
 
 - `build`: A kliens oldalhoz tartozó dokerfájl beállítása, amely telepíti az alkalmazás függőségeit, majd lefordítja azt, és a Compose által létrehozott image fájl a lefordított alkalmazást tartalmazza, ami alapján a doker konténert is létrehozza.
 - `NODE_BACKEND_HOSTNAME`: A `node-backend` konténere történő hivatkozás beállítása, ami alapján a kliens kéréseket intézhet a szerver felé.
-
-## Tesztek
-
-A szerver és a kliens oldal esetében is unit teszteket és ui teszteket készítettünk az alkalmazás egyes funkcióinak ellenőrzéséhez.
-
-### Szerver oldali tesztek
-
-A szerver oldal esetében a posztok kezelését végző funkciókat teszteltük le `mocha` és `chai` tesztelési keretrendszerek segítségével.
-
-Az `postController` alábbi metódusait teszteltük le:
-
-- A `getPost`, ami egy megadott azonosítójú posztot kér le.
-- A `createPost`, ami az aktuális felhasználóhoz egy paraméterként megadott posztot hoz létre az adatbázisban.
-- A `updatePost`, ami a poszt és az aktuális felhasználó azonosítója alapján talált bejegyzést frissíti a paraméterként megadott adatokkal.
-- A `deletePost`, ami a poszt és az aktuális felhasználó azonosítója alapján törli a bejegyzést az adatbázisból.
-
-### Kliens oldali tesztek
-
-A kliens oldalon a posztok lekérését végző szolgáltatás és a posztokat kilistázó komponensekre készítettünk teszteket `jasmine` és `karma` tesztelési keretrendszerek alkalmazásával.
-
-Az `PostsService` szolgáltatás alábbi metódusait teszteltük:
-
-- `getPost`, ami lekéri a megadott azonosítójú bejegyzést.
-- `addPost`, ami a bejegyzés címe, tartalma és egy kép alapján létrehoz egy bejegyzést, és a felhasználót visszanavigálja a főoldalra.
-- `deletePost`, ami a megadott azonosítójú bejegyzést törli.
-
-A `PostListComponent` komponensben tesztelt részek:
-
-- A komponens létrejön a megadott beállításokkal.
-- A komponens a betöltése során lekéri és elmenti a posztokat, valamint beállítja az oldalszámot is.
-- A lekért poszt meg is jelenik a komponenshez tartozó nézetben.
-- Egy poszt esetén a törlés gombra kattintva a `PostsService` szolgáltatás `deletePost` metódusa kerül meghívásra.
 
 ## Jenkins
 
