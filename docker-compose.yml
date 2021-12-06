@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   mongodb:
-    image: mongo:4.4.10
+    image: mongo:4.4.11-rc0
     restart: unless-stopped
     networks:
       - app-network
