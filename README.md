@@ -80,27 +80,27 @@ A docker konténerek összeállításánál az alábbi elemeket használtuk:
 
 ```yaml
 node-backend:
-   build:
-     context: ./backend
-     dockerfile: Dockerfile
-   image: nodejs
-   restart: unless-stopped
-   networks:
-     - app-network
-   env_file:
-     - .env
-   environment:
-     MONGO_HOSTNAME: mongodb
-   volumes:
-     - ./backend:/backend
-     - node_modules:/backend/node_modules
-   ports:
-     - 3000:3000
-   command: ./wait-for.sh mongodb:27017 -- node server.js
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  image: nodejs
+  restart: unless-stopped
+  networks:
+    - app-network
+  env_file:
+    - .env
+  environment:
+    MONGO_HOSTNAME: mongodb
+  volumes:
+    - ./backend:/backend
+    - node_modules:/backend/node_modules
+  ports:
+    - 3000:3000
+  command: ./wait-for.sh mongodb:27017 -- node server.js
 ```
 
-- `build`: Ez határozza meg a konfigurációs beállításokat, vagyis a dockerfájlt, amely alapján a Compose létrehoz egy node image fájlt a szerver oldal telepített függőségeivel, és ez alapján a docker konténert.
-- `image`: Az image fájlnak állít be egy egyedi nevet.
+- `build`: Ez határozza meg a konfigurációs beállításokat, vagyis a dockerfájlt, amely alapján a Compose létrehoz egy `nodejs` image fájlt a szerver oldal telepített függőségeivel, és ez alapján a docker konténert.
+- `image`: Az előzőleg említett image fájlnak állít be egy egyedi nevet.
 - `restart`: Ez határozza meg az újraindítási szabályt. Az alapértelmezés `no`, de a konténert úgy állítottuk be, hogy újrainduljon, hacsak nem állítják le.
 - `network`: Ez specifikálja, hogy a szolgáltatásunk az `app-network` hálózatra fog csatlakozni.
 - `env_file`: Ez azt jelzi a Compose-nak, hogy környezeti változókat szeretnénk hozzáadni egy .env nevű fájlból.
@@ -115,48 +115,39 @@ node-backend:
 
 ```yaml
 mongodb:
-   image: mongo
-   restart: unless-stopped
-   networks:
-   - app-network
-   env_file:
-   - .env
-   environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-   volumes:
-   - dbdata:/data/db
-   ports:
-   - 27017:27017
+  image: mongo
+  restart: unless-stopped
+  networks:
+    - app-network
+  volumes:
+    - dbdata:/data/db
+  ports:
+    - 27017:27017
 ```
 
 Néhány beállítás megegyezik az előző `node-backend` esetében definiált szolgáltatással, de vannak újak is, mint:
 
 - `image`: A szolgáltatás létrehozásához a Compose lekéri mongo image fájlt a Docker Hubról.
-- `MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD`: Ezen környezeti változók együtt hoznak létre egy `root` felhasználót az `admin` adatbázisban, és gondoskodik arról, hogy a hitelesítés engedélyezve legyen a konténer indulásakor.
 - `dbdata:/data/db`: A `dbdata` `named volume` típusú kötetbe kerülnek eltárolásra a Mongo konténerben lévő adatok. Ez biztosítja, hogy ne vesszenek el az adatok, amikor a konténer leállításra vagy eltávolításra kerül.
 
 ### A kliens docker konténer
 
 ```yaml
 angular-frontend:
-   build:
-     context: .
-     dockerfile: Dockerfile
-   image: angular
-   restart: unless-stopped
-   networks:
-     - app-network
-   environment:
-     NODE_BACKEND_HOSTNAME: node-backend
-   ports:
-     - 80:80
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: angular
+  restart: unless-stopped
+  networks:
+    - app-network
+  ports:
+    - 80:80
 ```
 
 A beállítások nagy része megegyezik az előző esetekkel, a különbség:
 
 - `build`: A kliens oldalhoz tartozó dokerfájl beállítása, amely telepíti az alkalmazás függőségeit, majd lefordítja azt, és a Compose által létrehozott image fájl a lefordított alkalmazást tartalmazza, ami alapján a doker konténert is létrehozza.
-- `NODE_BACKEND_HOSTNAME`: A `node-backend` konténere történő hivatkozás beállítása, ami alapján a kliens kéréseket intézhet a szerver felé.
 
 ## Jenkins
 
