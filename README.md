@@ -22,6 +22,17 @@ Az alkalmazás a három rétegű architektúrát követi:
 - **Express szerver oldal**: Az Express egy Node.js alapú keretrendszere, amely ingyenes és nyílt forráskódú. Webes alkalmazások és API-k kiépítésére tervezték.
 - **MongoDB adatbázis**: A MongoDB nyílt forráskódú dokumentumorientált adatbázis szoftver, amelyet a NoSQL adatbázisszerverek közé tartozik.
 
+## GitHub CI
+
+- Az alkalmazáshoz két Github workflow készült:
+  - **Backend tesztelésre**
+  - **Frontend tesztelésre**
+
+- Mind a két pipeline a legfrissebb ubuntu image-et használja és ugyanaz a két parancs van bennük kiadva: `npm ci` és `npm run test`, utóbbi esetlegesen pár opcióval
+- A teszteléshez tartozó parancs a backenden erre oldódik fel:
+`mocha tests/**/*.js --reporter mocha-junit-reporter`
+- A projekt konfigurációja miatt a két parancs következtében JUnit formátumú XML fájlokként teszt reportok készülnek, ezt pedig a workflow publikálja
+
 ## Docker:
 
 A docker konténerek összeállításánál az alábbi elemeket használtuk:
@@ -34,26 +45,26 @@ A docker konténerek összeállításánál az alábbi elemeket használtuk:
 
 ```yaml
 node-backend:
-  build:
-    context: ./backend
-    dockerfile: Dockerfile
-  image: nodejs
-  restart: unless-stopped
-  networks:
-    - app-network
-  env_file:
-    - .env
-  environment:
-    MONGO_HOSTNAME: mongodb
-  volumes:
-    - ./backend:/backend
-    - node_modules:/backend/node_modules
-  ports:
-    - 3000:3000
-  command: ./wait-for.sh mongodb:27017 -- node server.js
+   build:
+     context: ./backend
+     dockerfile: Dockerfile
+   image: nodejs
+   restart: unless-stopped
+   networks:
+     - app-network
+   env_file:
+     - .env
+   environment:
+     MONGO_HOSTNAME: mongodb
+   volumes:
+     - ./backend:/backend
+     - node_modules:/backend/node_modules
+   ports:
+     - 3000:3000
+   command: ./wait-for.sh mongodb:27017 -- node server.js
 ```
 
-- `build`: Ez határozza meg a konfigurációs beállításokat, vagyis a dockerfájlt, amely alapján a Compose létrehoz egy `nodejs` image fájlt a szerver oldal telepített függőségeivel, és ez alapján a docker konténert.
+- `build`: Ez határozza meg a konfigurációs beállításokat, vagyis a dockerfájlt, amely alapján a Compose létrehoz egy node image fájlt a szerver oldal telepített függőségeivel, és ez alapján a docker konténert.
 - `image`: Az image fájlnak állít be egy egyedi nevet.
 - `restart`: Ez határozza meg az újraindítási szabályt. Az alapértelmezés `no`, de a konténert úgy állítottuk be, hogy újrainduljon, hacsak nem állítják le.
 - `network`: Ez specifikálja, hogy a szolgáltatásunk az `app-network` hálózatra fog csatlakozni.
@@ -69,39 +80,48 @@ node-backend:
 
 ```yaml
 mongodb:
-  image: mongo
-  restart: unless-stopped
-  networks:
-    - app-network
-  volumes:
-    - dbdata:/data/db
-  ports:
-    - 27017:27017
+   image: mongo
+   restart: unless-stopped
+   networks:
+   - app-network
+   env_file:
+   - .env
+   environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+   volumes:
+   - dbdata:/data/db
+   ports:
+   - 27017:27017
 ```
 
 Néhány beállítás megegyezik az előző `node-backend` esetében definiált szolgáltatással, de vannak újak is, mint:
 
 - `image`: A szolgáltatás létrehozásához a Compose lekéri mongo image fájlt a Docker Hubról.
+- `MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD`: Ezen környezeti változók együtt hoznak létre egy `root` felhasználót az `admin` adatbázisban, és gondoskodik arról, hogy a hitelesítés engedélyezve legyen a konténer indulásakor.
 - `dbdata:/data/db`: A `dbdata` `named volume` típusú kötetbe kerülnek eltárolásra a Mongo konténerben lévő adatok. Ez biztosítja, hogy ne vesszenek el az adatok, amikor a konténer leállításra vagy eltávolításra kerül.
 
 ### A kliens docker konténer
 
 ```yaml
 angular-frontend:
-  build:
-    context: .
-    dockerfile: Dockerfile
-  image: angular
-  restart: unless-stopped
-  networks:
-    - app-network
-  ports:
-    - 80:80
+   build:
+     context: .
+     dockerfile: Dockerfile
+   image: angular
+   restart: unless-stopped
+   networks:
+     - app-network
+   environment:
+     NODE_BACKEND_HOSTNAME: node-backend
+   ports:
+     - 80:80
 ```
 
 A beállítások nagy része megegyezik az előző esetekkel, a különbség:
 
 - `build`: A kliens oldalhoz tartozó dokerfájl beállítása, amely telepíti az alkalmazás függőségeit, majd lefordítja azt, és a Compose által létrehozott image fájl a lefordított alkalmazást tartalmazza, ami alapján a doker konténert is létrehozza.
+- `NODE_BACKEND_HOSTNAME`: A `node-backend` konténere történő hivatkozás beállítása, ami alapján a kliens kéréseket intézhet a szerver felé.
 
 ## Tesztek
 
@@ -111,7 +131,7 @@ A szerver és a kliens oldal esetében is unit teszteket és ui teszteket kész�
 
 A szerver oldal esetében a posztok kezelését végző funkciókat teszteltük le `mocha` és `chai` tesztelési keretrendszerek segítségével.
 
-A `postController` alábbi metódusait teszteltük le:
+Az `postController` alábbi metódusait teszteltük le:
 
 - A `getPost`, ami egy megadott azonosítójú posztot kér le.
 - A `createPost`, ami az aktuális felhasználóhoz egy paraméterként megadott posztot hoz létre az adatbázisban.
@@ -134,3 +154,15 @@ A `PostListComponent` komponensben tesztelt részek:
 - A komponens a betöltése során lekéri és elmenti a posztokat, valamint beállítja az oldalszámot is.
 - A lekért poszt meg is jelenik a komponenshez tartozó nézetben.
 - Egy poszt esetén a törlés gombra kattintva a `PostsService` szolgáltatás `deletePost` metódusa kerül meghívásra.
+
+## Jenkins
+
+A Jenkins szerver a BME Cloudban lévő DevOps CI VM-en fut
+
+A virtuális gép 80-as portja ki mappelve, hogy bárki el tudja érni az alkalmazást.
+
+A build folyamat beállításai az alábbiak
+  - Lehúzza a GitHub repository legújabb verziójának 'main' branchét
+  - 30 percentként ellenőrzi, hogy történt-e változtatás és ha igen, akkor újra lefut
+  - Leállítja a futó docker konténereket és a docker imageket eltávolítja
+  - Egy külön Jenkins plugint használva lefuttatja a 'docker-compose up' parancsot néhány hozzáadott opcióval
