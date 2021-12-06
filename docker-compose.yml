@@ -18,8 +18,7 @@ services:
     image: nodejs
     restart: unless-stopped
     networks:
-      app-network:
-        ipv4_address: 10.5.0.5
+      - app-network
     env_file:
       - .env
     environment:
@@ -39,17 +38,12 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    environment:
-      NODE_BACKEND_HOSTNAME: node-backend
     ports:
       - 80:80
 
 networks:
   app-network:
     driver: bridge
-    ipam:
-     config:
-       - subnet: 10.5.0.0/16
 
 volumes:
   dbdata:
