@@ -8,10 +8,10 @@ const userRoutes = require("./routes/user");
 
 const app = express();
 
-const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOSTNAME, MONGO_PORT, MONGO_DB } =
+const { MONGO_HOSTNAME, MONGO_PORT, MONGO_DB } =
   process.env;
 
-const url = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
+const url = `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`;
 
 mongoose
   .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
